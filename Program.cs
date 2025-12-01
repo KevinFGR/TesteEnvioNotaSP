@@ -42,8 +42,7 @@ app.MapGet("consulta-cnpj/{cnpj}/{digital}", (string cnpj, string digital) =>
 
 app.MapGet("teste-envio-lote-rps/{cnpj}/{digital}", (string cnpj, string digital) =>
 {
-    X509Certificate2 certificadoX509 = GetCredenciais(digital);
-    NotasPrefeituraSPClient client = new (certificadoX509, cnpj);
+    NotasPrefeituraSPClient client = new (digital, cnpj);
     tpRPS[] listRps = [
         new(){
             RazaoSocialTomador = "SOLIDA ENGENHARIA LTDA",
@@ -54,33 +53,18 @@ app.MapGet("teste-envio-lote-rps/{cnpj}/{digital}", (string cnpj, string digital
                 ComplementoEndereco = "KM 85",
                 Bairro = "VILA CAPRI",
                 Cidade = 3300209, // Código IBGE
-                CidadeSpecified = true,
                 UF = "RJ",
                 CEP = 28970000,
-                CEPSpecified = true
             },
             EmailTomador = "solida@solidaengenharia.com.br",
-            // CPFCNPJIntermediario = new(){} NÃO TEM
-            // InscricaoMunicipalIntermediario =  NÃO TEM
-            // ISSRetidoIntermediario =  NÃO TEM
-            // EmailIntermediario = NÃO TEM
             Discriminacao = "Essa é a descrição dos serviços", // 404 - DescriçãoRPS ??? DescricaoServicoComplemento ???
-            ValorCargaTributaria = 0, // 404 
-            PercentualCargaTributaria = 0, // 404 
-            FonteCargaTributaria = "teste", // 404
-            CodigoCEI = 0, // Null no banco
-            MatriculaObra = 0, // null no banco
-            MunicipioPrestacao = 3300209,
-            NumeroEncapsulamento = 0,  // 404
-            InscricaoEstadualTomador = 0,
-            InscricaoMunicipalTomador = 10000186,
             ChaveRPS = new(){
                 InscricaoPrestador = 39901599, // Validar dps
                 SerieRPS = "20",
                 NumeroRPS = 5433,
             },
             TipoRPS = 0, // !!
-            DataEmissao = DateTime.Parse("2025-11-11"), // DataFaturamento ??
+            DataEmissao = DateTime.Parse("2025-12-01"), // DataFaturamento ??
             StatusRPS = 0, // !!!,
             TributacaoRPS = "T", // !!!, 
             ValorServicos = 2354.97M, // ValorTotal,
@@ -91,8 +75,8 @@ app.MapGet("teste-envio-lote-rps/{cnpj}/{digital}", (string cnpj, string digital
             ValorINSS = 0, // DescricaoINSS !!!
             ValorIR = 0, // PercentualIR !!!
             ValorCSLL = 0, // PercentualCSLL !!!
-            CodigoServico = 011023, // CodigoServicoRPS !!!
-            AliquotaServicos = 1, // !!! ??
+            CodigoServicoS = "01023", // CodigoServicoRPS !!!
+            AliquotaServicos = 0, // !!! ??
             ISSRetido = false,
             CPFCNPJTomador = new(){
                 Item = "72045925000160"
@@ -155,6 +139,8 @@ static X509Certificate2 GetCredenciais(string digital)
             digital,
             validOnly: false // true = apenas válidos, false = inclui expirados
         );
+
+        // certificados[0].SerialNumber;
 
         if (certificados.Count == 0)
             throw new Exception($"Nenhum certificado encontrado contendo '{digital}'.");
