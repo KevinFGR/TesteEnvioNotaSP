@@ -26,8 +26,8 @@ app.MapGet("consulta-cnpj/{cnpj}/{digital}", (string cnpj, string digital) =>
 {
     dynamic response = new { };
     try{
-        X509Certificate2 certificadoX509 = GetCredenciais(digital);
-        NotasPrefeituraSPClient client = new (certificadoX509, cnpj);
+        // X509Certificate2 certificadoX509 = GetCredenciais(digital);
+        NotasPrefeituraSPClient client = new (digital, cnpj);
         RetornoConsultaCNPJ result = client.ConsultaCNPJ(60316817000103);
         response = result.Cabecalho.Sucesso ? 
             new { data = result.Detalhe[0]}:
